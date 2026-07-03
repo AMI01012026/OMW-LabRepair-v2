@@ -61,7 +61,7 @@ function header(t,s){return `<div class="topbar"><div><h1>${t}</h1><div class="s
 function logoBlock(){return `<img src="als-logo.png" alt="ALS" class="als-logo" onerror="this.style.display='none'">`}
 function layout(content){
  if(state.view==="welcome") return content;
- return `<div class="app"><aside class="sidebar">${logoBlock()}<div class="logo">OMW LabRepair<small>Version 1.4</small></div>
+ return `<div class="app"><aside class="sidebar">${logoBlock()}<div class="logo">OMW LabRepair<small>Version 1.5</small></div>
 <div><div class="side-section">Indsendelse</div>
 <button class="side-btn ${(state.view==='labselect'||state.view==='labform')?'active':''}" onclick="go('labselect')"><span class="icon">L</span> Lab reparationer</button>
 <button class="side-btn ${(state.view==='sendselect'||state.view==='sendform')?'active':''}" onclick="go('sendselect')"><span class="icon">S</span> Send til</button></div>
@@ -91,7 +91,7 @@ function render(){
 }
 
 function welcomeView(){
- return `<div class="welcome"><div class="welcome-card">${logoBlock()}<h1>Velkommen til OMW LabRepair</h1><p>ALS Environmental<br>Digital platform til OMW-reparationer og Send til.</p><label>Indtast dine initialer<input id="welcomeInitials" placeholder="fx AM" maxlength="8" onkeydown="if(event.key==='Enter')saveWelcome()"></label><button class="primary" onclick="saveWelcome()">Start</button><div class="version">Version 1.4</div></div></div>`;
+ return `<div class="welcome"><div class="welcome-card">${logoBlock()}<h1>Velkommen til OMW LabRepair</h1><p>ALS Environmental<br>Digital platform til OMW-reparationer og Send til.</p><label>Indtast dine initialer<input id="welcomeInitials" placeholder="fx AM" maxlength="8" onkeydown="if(event.key==='Enter')saveWelcome()"></label><button class="primary" onclick="saveWelcome()">Start</button><div class="version">Version 1.5</div></div></div>`;
 }
 function saveWelcome(){
  const val=document.getElementById("welcomeInitials").value.trim();
@@ -240,9 +240,20 @@ async function submitSendTil(){
 function afv(type){
  const rep=activeRows().filter(r=>r.sample_type===type&&r.request_type==="reparation");
  const send=activeRows().filter(r=>r.sample_type===type&&r.request_type==="send_til");
+ const all=[...rep,...send];
  return `${header("Afvejning "+labelType(type),`Alle ${labelType(type).toLowerCase()} opgaver. Reparationer og Send til vises i hver sin liste.`)}
- <div class="card"><div class="toolbar"><b>Reparationer (${rep.length})</b><div><button class="primary" onclick='printAndMark(${JSON.stringify(rep.map(x=>x.id))},"Reparationer ${labelType(type)}")'>Print A4</button><button class="green" onclick='archive(${JSON.stringify(rep.map(x=>x.id))})'>Arkivér</button></div></div>${tableRep(rep)}</div>
- <div class="card"><div class="toolbar"><b>Send til (${send.length})</b><div><button class="primary" onclick='printAndMark(${JSON.stringify(send.map(x=>x.id))},"Send til ${labelType(type)}")'>Print A4</button><button class="green" onclick='archive(${JSON.stringify(send.map(x=>x.id))})'>Arkivér</button></div></div>${tableSend(send)}</div>`;
+ <div class="card"><div class="toolbar"><b>Alle opgaver (${all.length})</b><div>
+   <button class="primary" onclick='printAllAndArchive("${type}")'>Print A4 samlet</button>
+   <button class="amber" onclick='printLabelsForType("${type}")'>Print etiketter</button>
+   <button class="green" onclick='archive(${JSON.stringify(all.map(x=>x.id))})'>Arkivér</button>
+ </div></div><p class="subtitle">A4-print samler Reparationer og Send til på samme papir for ${labelType(type)}.</p></div>
+ <div class="card"><div class="toolbar"><b>Reparationer (${rep.length})</b><div>
+   <button class="primary" onclick='printAndArchive(${JSON.stringify(rep.map(x=>x.id))},"Reparationer ${labelType(type)}")'>Print A4</button>
+   <button class="amber" onclick='printLabelsForIds(${JSON.stringify(rep.map(x=>x.id))},"Etiketter ${labelType(type)}")'>Print etiketter</button>
+ </div></div>${tableRep(rep)}</div>
+ <div class="card"><div class="toolbar"><b>Send til (${send.length})</b><div>
+   <button class="primary" onclick='printAndArchive(${JSON.stringify(send.map(x=>x.id))},"Send til ${labelType(type)}")'>Print A4</button>
+ </div></div>${tableSend(send)}</div>`;
 }
 function tableRep(rows){
  if(!rows.length)return "<p class='subtitle'>Ingen data</p>";
@@ -252,12 +263,39 @@ function tableSend(rows){
  if(!rows.length)return "<p class='subtitle'>Ingen data</p>";
  return `<table><thead><tr><th>Destination</th><th>Prøve</th><th>Kasse</th><th>Gram</th><th>Initialer</th><th>1. vejedato</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.destination||""}</td><td><b>${r.sample}</b></td><td>${r.box||""}</td><td>${r.grams||""} g</td><td>${r.initials||""}</td><td>${r.first_weighing||""}</td></tr>`).join("")}</tbody></table>`;
 }
-async function printAndMark(ids,title){
+async function printAndArchive(ids,title){
  const rows=state.rows.filter(r=>ids.includes(r.id));
+ if(!rows.length)return toast("Ingen rækker til print.");
  printRows(rows,title);
- try{await updateRows(ids,{printed:true,printed_at:new Date().toISOString(),printed_by:"Afvejning"});await refresh(false,true)}
- catch(e){state.error=e.message;render()}
+ try{
+   await updateRows(ids,{printed:true,printed_at:new Date().toISOString(),printed_by:"Afvejning",status:"arkiv",archive_date:new Date().toISOString(),archive_by:"Print"});
+   toast("Printet og flyttet til arkiv");
+   await refresh(false,true);
+ }catch(e){state.error=e.message;render()}
 }
+
+async function printAllAndArchive(type){
+ const rows=activeRows().filter(r=>r.sample_type===type);
+ const ids=rows.map(r=>r.id);
+ if(!rows.length)return toast("Ingen rækker til print.");
+ printRows(rows,`Afvejning ${labelType(type)} - samlet`);
+ try{
+   await updateRows(ids,{printed:true,printed_at:new Date().toISOString(),printed_by:"Afvejning",status:"arkiv",archive_date:new Date().toISOString(),archive_by:"Print"});
+   toast("Printet samlet og flyttet til arkiv");
+   await refresh(false,true);
+ }catch(e){state.error=e.message;render()}
+}
+
+function printLabelsForType(type){
+ const rows=activeRows().filter(r=>r.sample_type===type && r.request_type==="reparation");
+ printLabels(rows,`Etiketter ${labelType(type)}`);
+}
+
+function printLabelsForIds(ids,title){
+ const rows=state.rows.filter(r=>ids.includes(r.id));
+ printLabels(rows,title);
+}
+
 async function archive(ids){
  if(!ids.length)return toast("Ingen rækker.");
  try{await updateRows(ids,{status:"arkiv",archive_date:new Date().toISOString(),archive_by:"Afvejning"});toast("Flyttet til arkiv");await refresh(false,true)}

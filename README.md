@@ -1,9 +1,7 @@
-# OMW LabRepair v1.4
+# OMW LabRepair v1.5
 
-Fix release:
-- Form values no longer disappear while typing
-- No render on duplicate check
-- Drafts are kept in memory until Send
-- Opsætning: only initials visible to normal users
-- Technical Supabase setup locked with password
-- Afvejning text clarified
+Print/flow update:
+- A4 print cleaned
+- Reparationer and Send til can be printed together for same sample type
+- A4 print automatically archives printed rows
+- Added labels from Bestems, e.g. 12345 + 2+3 => 12345-2 and 12345-3

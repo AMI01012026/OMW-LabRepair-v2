@@ -1,11 +1,16 @@
 const CONFIG_KEYS = [
+  "omw_labrepair_config_v15",
   "omw_labrepair_config_v14",
   "omw_labrepair_config_v13",
   "omw_labrepair_config_v12",
   "omw_labrepair_config_v11",
   "omw_labrepair_config_v1"
 ];
-const CONFIG_KEY = "omw_labrepair_config_v14";
+const CONFIG_KEY = "omw_labrepair_config_v15";
+
+function normalizeSupabaseUrl(url) {
+  return String(url || "").trim().replace(/\/rest\/v1\/?$/i, "").replace(/\/+$/, "");
+}
 
 function getConfig() {
   for (const key of CONFIG_KEYS) {
@@ -14,7 +19,7 @@ function getConfig() {
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
-          supabaseUrl: parsed.supabaseUrl || window.OMW_DEFAULT_CONFIG.supabaseUrl || "",
+          supabaseUrl: normalizeSupabaseUrl(parsed.supabaseUrl || window.OMW_DEFAULT_CONFIG.supabaseUrl || ""),
           supabaseKey: parsed.supabaseKey || window.OMW_DEFAULT_CONFIG.supabaseKey || "",
           initials: parsed.initials || ""
         };
@@ -22,7 +27,7 @@ function getConfig() {
     } catch {}
   }
   return {
-    supabaseUrl: window.OMW_DEFAULT_CONFIG.supabaseUrl || "",
+    supabaseUrl: normalizeSupabaseUrl(window.OMW_DEFAULT_CONFIG.supabaseUrl || ""),
     supabaseKey: window.OMW_DEFAULT_CONFIG.supabaseKey || "",
     initials: ""
   };
@@ -30,7 +35,7 @@ function getConfig() {
 
 function saveConfig(config) {
   const clean = {
-    supabaseUrl: config.supabaseUrl || "",
+    supabaseUrl: normalizeSupabaseUrl(config.supabaseUrl || ""),
     supabaseKey: config.supabaseKey || "",
     initials: config.initials || ""
   };
