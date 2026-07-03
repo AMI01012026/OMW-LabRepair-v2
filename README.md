@@ -1,5 +1,7 @@
-# OMW LabRepair v1.2
+# OMW LabRepair v1.3
 
-- Welcome screen with ALS logo
-- Initials first setup
-- Supabase technical setup hidden under Opsætning
+- Fix: input fields no longer disappear while typing
+- Refresh disabled while editing forms
+- Setup locked with password
+- Welcome screen with initials
+- ALS logo
