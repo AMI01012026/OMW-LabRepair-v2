@@ -1,16 +1,3 @@
-# OMW LabRepair Functional v1
+# OMW LabRepair v1.1
 
-Prva funkcionalna verzija.
-
-## Datoteke
-
-- index.html
-- style.css
-- app.js
-- config.js
-- supabaseClient.js
-- print.js
-
-## Pokretanje
-
-Objavi na GitHub Pages. U aplikaciji otvori Opsætning i unesi Supabase URL + Publishable key.
+Functional version with Supabase, initials, duplicate warning, Enter navigation, Send til, Afvejning Jord/Materialer, archive and dashboard.
