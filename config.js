@@ -1,1 +1,4 @@
-window.OMW_DEFAULT_CONFIG={supabaseUrl:"",supabaseKey:""};
+window.OMW_DEFAULT_CONFIG = {
+  supabaseUrl: "https://krlcddtzyvrukjfngzbq.supabase.co",
+  supabaseKey: ""
+};

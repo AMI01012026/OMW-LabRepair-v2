@@ -1,3 +1,5 @@
-# OMW LabRepair v1.1
+# OMW LabRepair v1.2
 
-Functional version with Supabase, initials, duplicate warning, Enter navigation, Send til, Afvejning Jord/Materialer, archive and dashboard.
+- Welcome screen with ALS logo
+- Initials first setup
+- Supabase technical setup hidden under Opsætning
