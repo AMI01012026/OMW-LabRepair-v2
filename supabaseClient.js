@@ -1,10 +1,26 @@
-const CONFIG_KEY = "omw_labrepair_config_v13";
+const CONFIG_KEYS = [
+  "omw_labrepair_config_v14",
+  "omw_labrepair_config_v13",
+  "omw_labrepair_config_v12",
+  "omw_labrepair_config_v11",
+  "omw_labrepair_config_v1"
+];
+const CONFIG_KEY = "omw_labrepair_config_v14";
 
 function getConfig() {
-  try {
-    const saved = localStorage.getItem(CONFIG_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
+  for (const key of CONFIG_KEYS) {
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          supabaseUrl: parsed.supabaseUrl || window.OMW_DEFAULT_CONFIG.supabaseUrl || "",
+          supabaseKey: parsed.supabaseKey || window.OMW_DEFAULT_CONFIG.supabaseKey || "",
+          initials: parsed.initials || ""
+        };
+      }
+    } catch {}
+  }
   return {
     supabaseUrl: window.OMW_DEFAULT_CONFIG.supabaseUrl || "",
     supabaseKey: window.OMW_DEFAULT_CONFIG.supabaseKey || "",
@@ -13,7 +29,12 @@ function getConfig() {
 }
 
 function saveConfig(config) {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+  const clean = {
+    supabaseUrl: config.supabaseUrl || "",
+    supabaseKey: config.supabaseKey || "",
+    initials: config.initials || ""
+  };
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(clean));
 }
 
 let supabaseClient = null;

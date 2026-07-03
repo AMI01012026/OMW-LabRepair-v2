@@ -1,7 +1,9 @@
-# OMW LabRepair v1.3
+# OMW LabRepair v1.4
 
-- Fix: input fields no longer disappear while typing
-- Refresh disabled while editing forms
-- Setup locked with password
-- Welcome screen with initials
-- ALS logo
+Fix release:
+- Form values no longer disappear while typing
+- No render on duplicate check
+- Drafts are kept in memory until Send
+- Opsætning: only initials visible to normal users
+- Technical Supabase setup locked with password
+- Afvejning text clarified
