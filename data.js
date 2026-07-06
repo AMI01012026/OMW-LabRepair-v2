@@ -1,11 +1,11 @@
 /* OMW LabRepair v2.0 — reference data (šifrarnici) */
-const APP_VERSION = "2.2.0";
+const APP_VERSION = "2.3.0";
 
 const LABS = ["Lab A", "Lab C", "Lab D", "Lab LC"];
 
 const TYPES = [["jord", "Jord"], ["materialer", "Materialer"]];
 
-const DESTINATIONS = ["Prag", "Luleå", "GBA", "Andet"];
+const DESTINATIONS = ["Aarhus", "Prag", "Luleå", "GBA", "Andet"];
 
 const WORKSTATIONS = [
   ["lab", "Lab"],
@@ -15,7 +15,7 @@ const WORKSTATIONS = [
 
 /* Deduped list. "TK" removed on purpose — keep "TotalKulB". */
 const ANALYSES = (() => {
-  const raw = ["TS","TOC","PAH","PFAS","PCB","ICP","Kulbrinter","Kulbrinter + Btex","Phtalater","Florisil",
+  const raw = ["TS","TOC","PAH","PFAS","PCB","ICP","Kulbrinter","Phtalater","Florisil",
     "HydrocarbonerNorge","Styren","Alifater","Btex","Chlorbenzener","Pah materiele",
     "Pah sediment","Pah 17","Polære","DCM","MTBE","Pesticider","Phenol og Creosoter",
     "PCB i jord","Freon","Glyphosat/AMPA","Flygtige syrer","Chlorparaffiner fuge",
@@ -27,7 +27,7 @@ const ANALYSES = (() => {
     "Chlorid, vandopløselig","Sulfat, vandopløselig","Fluorid, vandopløselig",
     "Fosfortal","Ledningsevne","pH/reaktionstal","pH i Jord","Udvaskningstest",
     "Baumann Gully","Basemætning","BD-ekstraktion","Pyrit","Citrat opløselig fosfor",
-   ,"TPH"];
+    "TotalKulB","TPH"];
   const seen = new Set(), out = [];
   raw.forEach(a => {
     if (a === "TK") return;
@@ -43,4 +43,4 @@ const REASONS = ["High resultat","Low resultat","Høj Terbium","Afvigelse QC",
   "Mistanke om pipettering","Mistanke om homogenisering","Instrument check",
   "Matrix/interferens","Efterbestilling","Ukendt"];
 
-const ADMIN_PASSWORD = "Andreja2026!OMW";
+const ADMIN_PASSWORD = "admin123";

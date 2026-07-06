@@ -6,6 +6,7 @@ function escapeHtml(v) {
 }
 
 function toast(m) {
+  document.querySelectorAll(".toast").forEach(t => t.remove()); // én ad gangen — ingen stabling
   const d = document.createElement("div");
   d.className = "toast";
   d.textContent = m;

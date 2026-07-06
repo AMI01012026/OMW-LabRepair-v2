@@ -1,4 +1,4 @@
-# OMW LabRepair v2.2.0 (Production)
+# OMW LabRepair v2.3.0 (Production · PWA)
 
 Produktionsversion til ALS Environmental. HTML + CSS + vanilla JavaScript, Supabase som backend. Ingen frameworks, ingen build-steps — filerne hostes som statiske filer, præcis som før.
 
@@ -37,6 +37,14 @@ Produktionsversion til ALS Environmental. HTML + CSS + vanilla JavaScript, Supab
 | `dashboard.js` | Dashboard-beregninger og -visning |
 | `app.js` | State, views, login, formularer, arbejdslister, arkiv |
 | `style.css` | Én samlet stylesheet (Fluent, ALS-blå) |
+
+## Nyt i v2.3.0 — PWA + polish
+
+**PWA:** appen kan nu installeres som rigtig app fra Edge/Chrome ("Installér app" i adresselinjen) med ALS-ikon på skrivebordet, eget vindue (standalone) og offline-start på sidst kendte version. Nye filer: `manifest.json`, `service-worker.js` (network-first, rører aldrig Supabase/CDN-kald), ikoner 192/512 (+maskable) og favicon — alle genereret fra vektorlogoet. `netlify.toml` sørger for at service workeren aldrig hard-caches, så nye versioner ruller automatisk ved næste åbning.
+
+**Vigtigt om Zebra på Netlify (HTTPS):** en HTTPS-side må ikke kalde printerens `http://<ip>/pstprnt` (mixed content) — direkte ZPL-print falder derfor automatisk tilbage til browserens printdialog med en besked. Muligheder for print-stationerne: (a) tillad "usikkert indhold" for sitet i Edge/Chrome-politik (InsecureContentAllowedForUrls) på de få maskiner der printer, eller (b) brug "Download ZPL" og send filen til printeren. Ingen kodeændring — adfærden er den samme som dokumenteret.
+
+**Polish (ingen workflow-ændringer):** dobbeltklik-vagt på Send/Print/Arkivér (forhindrede også en mulig dobbelt-insert), kun én toast ad gangen, synk-puls på statusprikken under datahentning, ens select-pile i begge temaer, centrerede checkbokse i tabeller, række-hover, disabled/busy-tilstande, søgefelt der fylder pænt på mobil.
 
 ## Nyt i v2.2.0 — Production Readiness
 

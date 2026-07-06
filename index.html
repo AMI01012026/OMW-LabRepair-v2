@@ -4,25 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OMW LabRepair</title>
-  <link rel="icon" href="als-logo.png" type="image/png" />
+  <meta name="theme-color" content="#27568C" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2.2.0" />
+  <link rel="stylesheet" href="style.css?v=2.3.0" />
 </head>
 <body>
   <noscript><div style="font-family:sans-serif;padding:30px">JavaScript er slået fra i browseren. OMW LabRepair kræver JavaScript.</div></noscript>
   <div id="app"><div id="bootMsg" style="font-family:sans-serif;color:#8a7d74;padding:34px">Indlæser OMW LabRepair…</div></div>
   <div id="printArea"></div>
   <div id="notifyPopup" class="notify-popup" hidden></div>
-  <script src="config.js?v=2.2.0"></script>
-  <script src="data.js?v=2.2.0"></script>
-  <script src="supabaseClient.js?v=2.2.0"></script>
-  <script src="ui.js?v=2.2.0"></script>
-  <script src="print.js?v=2.2.0"></script>
-  <script src="dashboard.js?v=2.2.0"></script>
-  <script src="app.js?v=2.2.0"></script>
+  <script>
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("service-worker.js").catch(function () {});
+    });
+  }
+  </script>
+  <script src="config.js?v=2.3.0"></script>
+  <script src="data.js?v=2.3.0"></script>
+  <script src="supabaseClient.js?v=2.3.0"></script>
+  <script src="ui.js?v=2.3.0"></script>
+  <script src="print.js?v=2.3.0"></script>
+  <script src="dashboard.js?v=2.3.0"></script>
+  <script src="app.js?v=2.3.0"></script>
   <script>
   /* Boot-vagt: siden må ALDRIG være blank. Kører selv hvis alle andre filer mangler. */
   (function () {

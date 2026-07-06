@@ -18,6 +18,15 @@ let state = {
 
 let _knownIds = null;   // til polling-fallback: opdag nye rækker uden realtime
 let _muteUntil = 0;     // undertryk notifikationslyd for egne netop indsendte rækker
+let _writing = false;   // dobbeltklik-vagt: forhindrer dobbelt-insert/-arkivering
+
+async function guardedWrite(fn) {
+  if (_writing) return;
+  _writing = true;
+  document.body.classList.add("busy");
+  try { await fn(); }
+  finally { _writing = false; document.body.classList.remove("busy"); }
+}
 
 /* Kladder gemmes løbende i localStorage, så et uheldigt refresh/luk
    ikke sletter det, brugeren har tastet (data-tab beskyttelse). */
@@ -98,8 +107,11 @@ function activeRows() { return state.rows.filter(r => (r.status || "ny") === "ny
 function activeBtn(v, c) { return v === c ? "active" : ""; }
 
 async function refresh(showError = true, shouldRender = true) {
+  const dot = document.querySelector(".status .dot");
+  if (dot) dot.classList.add("busy");
   try { state.rows = await fetchRepairs(); state.error = ""; }
   catch (e) { if (showError) state.error = e.message; }
+  finally { const d2 = document.querySelector(".status .dot"); if (d2) d2.classList.remove("busy"); }
   if (shouldRender) render();
   if (state.loggedIn) updateNotifyPopup(state.rows, false);
 }
@@ -115,7 +127,7 @@ function header(t, s) {
   return `<div class="topbar"><div><h1>${escapeHtml(t)}</h1><div class="subtitle">${escapeHtml(s)}</div></div>
   <div class="status"><span class="dot ${state.connected ? "ok" : ""}"></span>${state.connected ? "Forbundet" : "Ikke forbundet"}</div></div>`;
 }
-function logoBlock() { return `<img src="als-logo.svg?v=2.2.0" alt="ALS" class="als-logo" onerror="this.onerror=null;this.src='als-logo.png'">`; }
+function logoBlock() { return `<img src="als-logo.svg?v=2.3.0" alt="ALS" class="als-logo" onerror="this.onerror=null;this.src='als-logo.png'">`; }
 
 function layout(content) {
   if (state.view === "welcome") return content;
@@ -350,7 +362,8 @@ function warningHtml() {
 function completeLabRows() {
   return state.labDraft.slice(0, state.labRowCount).filter(r => r.sample && r.box && r.analysis && r.reason && r.first_weighing);
 }
-async function submitLab() {
+async function submitLab() { return guardedWrite(() => _submitLab()); }
+async function _submitLab() {
   const items = completeLabRows().map(r => ({
     request_type: "reparation", sample_type: state.sampleType, lab: state.lab,
     destination: null, grams: null, sample: r.sample, box: r.box, analysis: r.analysis,
@@ -399,7 +412,8 @@ function completeSendRows() {
   return state.sendDraft.slice(0, state.sendRowCount)
     .filter(r => r.sample && r.box && r.first_weighing && isFinite(Number(r.grams)) && Number(r.grams) > 0);
 }
-async function submitSendTil() {
+async function submitSendTil() { return guardedWrite(() => _submitSendTil()); }
+async function _submitSendTil() {
   const items = completeSendRows().map(r => ({
     request_type: "send_til", sample_type: state.sampleType, lab: "Send til",
     destination: state.destination, grams: Number(r.grams), sample: r.sample, box: r.box,
@@ -474,7 +488,8 @@ function printLabelsForType(type) {
 }
 
 /* Knap 2: A4 (Reparationer + Send til) og automatisk arkivering efter print. */
-async function printA4AndArchive(type) {
+async function printA4AndArchive(type) { return guardedWrite(() => _printA4AndArchive(type)); }
+async function _printA4AndArchive(type) {
   const rows = activeRows().filter(r => r.sample_type === type);
   if (!rows.length) return toast("Ingen rækker til print.");
   const ids = rows.map(r => r.id);
@@ -494,7 +509,8 @@ function downloadZplForType(type) {
   downloadZpl(rows, `etiketter_${type}_${today()}.zpl`);
 }
 
-async function archiveIds(ids) {
+async function archiveIds(ids) { return guardedWrite(() => _archiveIds(ids)); }
+async function _archiveIds(ids) {
   if (!ids.length) return toast("Ingen rækker.");
   try {
     await updateRows(ids, { status: "arkiv", archive_date: new Date().toISOString(), archive_by: cfgInitials() });

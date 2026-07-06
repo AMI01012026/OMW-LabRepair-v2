@@ -37,6 +37,12 @@ button.mini{padding:4px 8px;border-radius:6px}
 button.linklike{border:0;background:none;color:var(--als);padding:0 4px;text-decoration:underline;font-weight:600}
 
 input,textarea,select{width:100%;border:1px solid #C9D2DC;border-radius:6px;padding:8px 10px;background:#fff;color:var(--ink)}
+select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235C6B7A' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
+button:disabled,body.busy button.primary,body.busy .print-btn{opacity:.55;pointer-events:none}
+td>input[type="checkbox"]{display:block;margin:4px auto 0}
+tbody tr:hover td{background:#F6F8FB}
+.dot.busy{animation:dotbusy 1s ease-in-out infinite}
+@keyframes dotbusy{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
 textarea{min-height:38px;resize:vertical}
 input.search{max-width:360px}
 
