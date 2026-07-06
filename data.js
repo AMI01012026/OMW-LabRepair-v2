@@ -5,7 +5,7 @@ const LABS = ["Lab A", "Lab C", "Lab D", "Lab LC"];
 
 const TYPES = [["jord", "Jord"], ["materialer", "Materialer"]];
 
-const DESTINATIONS = ["Aarhus", "Prag", "Luleå", "GBA", "Andet"];
+const DESTINATIONS = ["Prag", "Luleå", "GBA", "Andet"];
 
 const WORKSTATIONS = [
   ["lab", "Lab"],
@@ -43,4 +43,4 @@ const REASONS = ["High resultat","Low resultat","Høj Terbium","Afvigelse QC",
   "Mistanke om pipettering","Mistanke om homogenisering","Instrument check",
   "Matrix/interferens","Efterbestilling","Ukendt"];
 
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_PASSWORD = "Andreja2026!OMW";
