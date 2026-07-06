@@ -96,19 +96,15 @@ async function testConnection() {
 async function fetchRepairs() {
   if (!supabaseClient) throw new Error("Supabase er ikke sat op.");
 
-  const cutoff = new Date(Date.now() - 396 * 24 * 3600 * 1000).toISOString();
-
   const { data, error } = await supabaseClient
     .from("repairs")
     .select("*")
-    .gte("created_at", cutoff)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
 
   return data || [];
 }
-
 /* Sikkerhedsvagt: en service_role-nøgle må ALDRIG bruges i browseren
    (den omgår al RLS). Afvis den ved opsætning. */
 function looksLikeServiceRoleKey(key) {
