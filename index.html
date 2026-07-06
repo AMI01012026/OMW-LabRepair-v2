@@ -4,15 +4,78 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OMW LabRepair</title>
+  <link rel="icon" href="als-logo.png" type="image/png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2.2.0" />
 </head>
 <body>
-  <div id="app"></div>
+  <noscript><div style="font-family:sans-serif;padding:30px">JavaScript er slået fra i browseren. OMW LabRepair kræver JavaScript.</div></noscript>
+  <div id="app"><div id="bootMsg" style="font-family:sans-serif;color:#8a7d74;padding:34px">Indlæser OMW LabRepair…</div></div>
   <div id="printArea"></div>
-  <script src="config.js"></script>
-  <script src="supabaseClient.js"></script>
-  <script src="print.js"></script>
-  <script src="app.js"></script>
+  <div id="notifyPopup" class="notify-popup" hidden></div>
+  <script src="config.js?v=2.2.0"></script>
+  <script src="data.js?v=2.2.0"></script>
+  <script src="supabaseClient.js?v=2.2.0"></script>
+  <script src="ui.js?v=2.2.0"></script>
+  <script src="print.js?v=2.2.0"></script>
+  <script src="dashboard.js?v=2.2.0"></script>
+  <script src="app.js?v=2.2.0"></script>
+  <script>
+  /* Boot-vagt: siden må ALDRIG være blank. Kører selv hvis alle andre filer mangler. */
+  (function () {
+    var firstError = null;
+    window.addEventListener("error", function (e) {
+      if (!firstError) firstError = (e.message || "Ukendt fejl") + (e.filename ? " — " + e.filename.split("/").pop() + ":" + e.lineno : "");
+    });
+    function panel(title, lines) {
+      var el = document.getElementById("app");
+      el.innerHTML =
+        '<div style="font-family:Segoe UI,sans-serif;max-width:640px;margin:60px auto;background:#fff;border:1px solid #e4dcd2;' +
+        'border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:26px;color:#4a4341">' +
+        '<h2 style="margin:0 0 10px;font-size:19px">' + title + "</h2>" +
+        lines.map(function (l) { return '<p style="margin:7px 0;line-height:1.5">' + l + "</p>"; }).join("") +
+        "</div>";
+    }
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        if (!document.getElementById("bootMsg")) return; // appen har renderet — alt OK
+        var files = [
+          ["config.js",        typeof window.OMW_DEFAULT_CONFIG !== "undefined"],
+          ["data.js",          typeof window.APP_VERSION !== "undefined" || typeof APP_VERSION !== "undefined"],
+          ["supabaseClient.js",typeof window.getConfig === "function"],
+          ["ui.js",            typeof window.toast === "function"],
+          ["print.js",         typeof window.printLabels === "function"],
+          ["dashboard.js",     typeof window.dashboardView === "function"],
+          ["app.js",           typeof window.render === "function"]
+        ];
+        var missing = files.filter(function (f) { return !f[1]; }).map(function (f) { return "<b>" + f[0] + "</b>"; });
+        if (missing.length) {
+          panel("OMW LabRepair kunne ikke starte — filer mangler", [
+            "Følgende filer blev ikke indlæst: " + missing.join(", ") + ".",
+            "<b>Den mest almindelige årsag:</b> index.html blev åbnet direkte inde fra ZIP-filen. " +
+            "Windows udpakker så kun den ene fil, og resten mangler.",
+            "<b>Løsning:</b> Højreklik på ZIP-filen → <b>Udpak alle…</b> → åbn derefter <b>index.html</b> fra den udpakkede mappe. " +
+            "Alle filer (app.js, style.css, osv.) skal ligge i samme mappe som index.html.",
+            firstError ? "Teknisk detalje: <code>" + firstError + "</code>" : ""
+          ]);
+        } else if (firstError) {
+          panel("OMW LabRepair kunne ikke starte", [
+            "Der opstod en fejl under opstart:",
+            "<code style='background:#f6f0e8;padding:4px 8px;border-radius:6px;display:inline-block'>" + firstError + "</code>",
+            "Prøv at genindlæse siden (Ctrl+F5). Fortsætter fejlen, kontakt administratoren med teksten ovenfor."
+          ]);
+        } else {
+          // scripts fine men render kørte aldrig — kør den manuelt som sidste udvej
+          try { window.render(); } catch (e) {
+            panel("OMW LabRepair kunne ikke starte", ["<code>" + (e.message || e) + "</code>"]);
+          }
+        }
+      }, 700);
+    });
+  })();
+  </script>
 </body>
 </html>
